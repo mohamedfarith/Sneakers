@@ -25,4 +25,5 @@ abstract class HomeModule {
 
     @Binds
     abstract fun provideHomeDataSourceReference(dataSource: HomeDataSourceImpl): HomeDataSource
+
 }

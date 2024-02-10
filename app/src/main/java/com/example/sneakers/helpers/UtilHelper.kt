@@ -1,8 +1,5 @@
 package com.example.sneakers.helpers
 
-object UtilHelper {
-}
-
 
 fun Any?.nonNullString(): String {
     val value = this.toString()
