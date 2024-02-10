@@ -6,10 +6,10 @@ this app aims to cater to your needs by offering a seamless browsing experience.
 
 ## Features
 
--**Browse Sneakers:** Explore a vast collection of sneakers from various brands, styles, and categories.
--**Search Functionality:** Easily find specific sneakers using the search bar.
--**Detailed Sneaker Information:** Access comprehensive details about each sneaker, including names, descriptions and prices.
--**Add to Cart:** Add any item to the cart to check them out later.
+- **Browse Sneakers:** Explore a vast collection of sneakers from various brands, styles, and categories.
+- **Search Functionality:** Easily find specific sneakers using the search bar.
+- **Detailed Sneaker Information:** Access comprehensive details about each sneaker, including names, descriptions and prices.
+- **Add to Cart:** Add any item to the cart to check them out later.
 
 
 ## Tech Stack
