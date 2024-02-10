@@ -1,8 +1,9 @@
 package com.example.sneakers.presentation.ui
 
 import android.os.Bundle
-import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
@@ -14,10 +15,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -28,16 +32,19 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.sneakers.R
+import com.example.sneakers.constants.AppConstants
 import com.example.sneakers.presentation.ui.cart.CartScreen
 import com.example.sneakers.presentation.ui.cart.CartViewModel
-import com.example.sneakers.presentation.ui.home.NavigationItem
 import com.example.sneakers.presentation.ui.home.HomeScreen
 import com.example.sneakers.presentation.ui.home.HomeViewModel
 import com.example.sneakers.presentation.ui.home.ItemDescriptionScreen
 import com.example.sneakers.presentation.ui.home.NavBottomBarWrapper
+import com.example.sneakers.presentation.ui.home.NavigationItem
+import com.example.sneakers.presentation.ui.search.SearchScreen
 import com.example.sneakers.ui.theme.SneakersTheme
 import com.example.sneakers.ui.theme.ThemeOrange
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -47,10 +54,24 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         window.statusBarColor = ContextCompat.getColor(this@MainActivity, R.color.white)
         setContent {
+            val coroutineScope = rememberCoroutineScope()
+            val context = LocalContext.current
             val surfaceModifier = Modifier
             val navController = rememberNavController()
             homeViewModel = hiltViewModel()
             cartViewModel = hiltViewModel()
+
+            LaunchedEffect(key1 = Unit) {
+                coroutineScope.launch {
+                    cartViewModel.dbOperationState.collect { message ->
+                        Toast.makeText(
+                            context,
+                            message,
+                            Toast.LENGTH_SHORT,
+                        ).show()
+                    }
+                }
+            }
             androidx.compose.material.Scaffold(
                 bottomBar = { NavBottomBarWrapper(navController) },
                 floatingActionButton = {
@@ -80,25 +101,44 @@ class MainActivity : ComponentActivity() {
                         startDestination = NavigationItem.Home.route
                     ) {
                         composable(NavigationItem.Home.route) {
-                            HomeScreen(homeViewModel = homeViewModel,cartViewModel, nextScreenRoute = {
-                                 screenRoute, item ->
+                            BackHandler {
+                                finish()
+                            }
+                            HomeScreen(
+                                homeViewModel = homeViewModel,
+                                cartViewModel,
+                                nextScreenRoute = { screenRoute, item ->
                                     homeViewModel.setSneakerData(item)
                                     navController.navigate(screenRoute)
 
-                            }, addToCartClicked = {itemDao->
-                                cartViewModel.addItemToCart(itemDao)
-                            })
+                                },
+                                addToCartClicked = { itemDao ->
+                                    cartViewModel.addItemToCart(itemDao.toSneakerItemDao())
+                                },
+                                onSearchClicked = {
+                                    navController.navigate(AppConstants.SEARCH)
+                                })
                         }
-                        composable(NavigationItem.ItemDescription.route) {
-                            ItemDescriptionScreen(viewModel = homeViewModel) { screenRoute, item ->
-                                //create new viewmodel and add to cart
-                                navController.navigate(screenRoute)
+                        composable(AppConstants.ITEM_DESCRIPTION) {
+                            ItemDescriptionScreen(viewModel = homeViewModel) { item ->
+                                cartViewModel.addItemToCart(item.toSneakerItemDao())
 
                             }
                         }
                         composable(NavigationItem.Cart.route) {
-                           CartScreen()
+                            CartScreen()
 
+                        }
+                        composable(AppConstants.SEARCH) {
+
+                            SearchScreen(addToCartClicked = { itemDao ->
+                                cartViewModel.addItemToCart(
+                                    itemDao.toSneakerItemDao()
+                                )
+                            }, nextScreenRoute = { screenRoute, item ->
+                                homeViewModel.setSneakerData(item)
+                                navController.navigate(screenRoute)
+                            })
                         }
                     }
                 }

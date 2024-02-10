@@ -8,6 +8,7 @@ import com.example.sneakers.presentation.ui.SneakerUiDto
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -15,12 +16,10 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(private val useCase: FetchSneakersUseCase) : ViewModel() {
 
     private var _sneakerListData = MutableStateFlow<NetworkState>(NetworkState.Loading)
-    val sneakerListData: StateFlow<NetworkState>
-        get() = _sneakerListData
+    val sneakerListData = _sneakerListData.asStateFlow()
 
     private var _sneakerData = MutableStateFlow<SneakerUiDto?>(null)
-    val sneakerData:StateFlow<SneakerUiDto?>
-        get() = _sneakerData
+    val sneakerData = _sneakerData.asStateFlow()
 
     fun fetchSneakerData() {
         viewModelScope.launch {
@@ -30,7 +29,7 @@ class HomeViewModel @Inject constructor(private val useCase: FetchSneakersUseCas
         }
     }
 
-    fun setSneakerData(sneakerUiDto: SneakerUiDto){
+    fun setSneakerData(sneakerUiDto: SneakerUiDto) {
         _sneakerData.value = sneakerUiDto
     }
 

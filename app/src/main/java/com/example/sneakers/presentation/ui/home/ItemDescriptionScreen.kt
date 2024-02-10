@@ -50,6 +50,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.sneakers.R
 import com.example.sneakers.constants.AppConstants
 import com.example.sneakers.presentation.ui.SneakerUiDto
+import com.example.sneakers.ui.theme.DarkGray
+import com.example.sneakers.ui.theme.LightBlue
+import com.example.sneakers.ui.theme.Purple40
 import com.example.sneakers.ui.theme.ThemeIconDarkOrange
 import com.example.sneakers.ui.theme.ThemeIconLightOrange
 import com.example.sneakers.ui.theme.ThemeOrange
@@ -62,7 +65,7 @@ import com.google.accompanist.pager.rememberPagerState
 @Composable
 fun ItemDescriptionScreen(
     viewModel: HomeViewModel = hiltViewModel(),
-    nextScreenRoute: (String, SneakerUiDto) -> Unit
+    addItemToCart: (SneakerUiDto) -> Unit
 ) {
     val height = LocalConfiguration.current.screenHeightDp
     val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
@@ -76,7 +79,7 @@ fun ItemDescriptionScreen(
                 .background(color = Color.White)
         ) {
             item {
-                CarouselComponent(modifier = Modifier.height((height / 2.5).dp), onBackPressed = {
+                CarouselComponent(modifier = Modifier.height((height / 2.4).dp), onBackPressed = {
                     backPressedDispatcher?.onBackPressed()
                 })
             }
@@ -85,15 +88,14 @@ fun ItemDescriptionScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(height.dp)
-                        .padding(5.dp)
-                        .shadow(shape = RoundedCornerShape(size = 30.dp), elevation = 20.dp),
+                        .shadow(shape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp), elevation = 20.dp),
                     colors = CardDefaults.cardColors(containerColor = Color.White)
                 ) {
-                    Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
+                    Column(modifier = Modifier.padding(horizontal = 10.dp), verticalArrangement = Arrangement.spacedBy(20.dp)) {
                         ItemDetails(title = data.title, description = data.description)
                         SizeComponent(listOf("10", "8", "7"))
-                        ColorComponent(listOf(Color.Blue, Color.Green, Color.Yellow))
-                        AddToCartComponent(data, nextScreenRoute)
+                        ColorComponent(listOf(ThemeIconLightOrange, Purple40, LightBlue))
+                        AddToCartComponent(data, addItemToCart)
 
                     }
                 }
@@ -116,10 +118,11 @@ fun ItemDetails(title: String, description: String) {
         )
         Text(
             modifier = Modifier.padding(top = 10.dp),
-            textAlign = TextAlign.Center,
+            textAlign = TextAlign.Start,
             text = description,
+            color = DarkGray,
             fontFamily = FontFamily.SansSerif,
-            style = Typography.titleMedium,
+            style = Typography.titleSmall,
             fontWeight = FontWeight.Normal
         )
 
@@ -127,12 +130,18 @@ fun ItemDetails(title: String, description: String) {
 }
 
 @Composable
-fun AddToCartComponent(data: SneakerUiDto, nextScreenRoute: (String, SneakerUiDto) -> Unit) {
-    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+fun AddToCartComponent(data: SneakerUiDto, addItemToCart: (SneakerUiDto) -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 10.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Text(
             modifier = Modifier.padding(10.dp),
             textAlign = TextAlign.Center,
             text = "Price :",
+            color = DarkGray,
             fontFamily = FontFamily.SansSerif,
             style = Typography.titleMedium,
             fontWeight = FontWeight.Normal
@@ -149,11 +158,13 @@ fun AddToCartComponent(data: SneakerUiDto, nextScreenRoute: (String, SneakerUiDt
         Spacer(modifier = Modifier.weight(1f))
 
         androidx.compose.material.Button(
-            onClick = { nextScreenRoute(AppConstants.HOME, data) },
+            modifier = Modifier.padding(20.dp),
+            shape = RoundedCornerShape(8.dp),
+            onClick = { addItemToCart(data) },
             colors = ButtonDefaults.buttonColors(backgroundColor = ThemeOrange)
         ) {
             Text(
-                modifier = Modifier.padding(10.dp),
+                modifier = Modifier.padding(5.dp),
                 textAlign = TextAlign.Center,
                 text = "Add to Cart",
                 color = Color.White,
@@ -168,12 +179,13 @@ fun AddToCartComponent(data: SneakerUiDto, nextScreenRoute: (String, SneakerUiDt
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ColorComponent(colorList: List<Color>) {
-    LazyRow(verticalAlignment = Alignment.CenterVertically) {
+    LazyRow(Modifier.padding(horizontal = 10.dp), verticalAlignment = Alignment.CenterVertically) {
         item {
             Text(
                 modifier = Modifier.padding(10.dp),
                 textAlign = TextAlign.Center,
-                text = "Size : ",
+                text = "Color : ",
+                color = DarkGray,
                 fontFamily = FontFamily.SansSerif,
                 style = Typography.titleMedium,
                 fontWeight = FontWeight.Normal
@@ -186,18 +198,18 @@ fun ColorComponent(colorList: List<Color>) {
                     FilterChip(colors = ChipDefaults.filterChipColors(backgroundColor = color),
                         modifier = Modifier
                             .wrapContentWidth()
-                            .padding(5.dp),
+                            .padding(10.dp),
                         selected = color == selected.value,
                         onClick = { selected.value = color }) {
                         if (selected.value == color)
                             Icon(
-                                modifier = Modifier.size(20.dp),
+                                modifier = Modifier.size(30.dp).padding(5.dp),
                                 painter = painterResource(id = R.drawable.check_icon),
                                 tint = Color.White,
                                 contentDescription = "Chip"
                             )
                         else {
-                            Spacer(modifier = Modifier.width(20.dp))
+                            Spacer(modifier = Modifier.width(30.dp))
                         }
                     }
                 }
@@ -211,12 +223,16 @@ fun ColorComponent(colorList: List<Color>) {
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun SizeComponent(sizeList: List<String>) {
-    LazyRow(verticalAlignment = Alignment.CenterVertically) {
+    LazyRow(
+        modifier = Modifier.padding(horizontal = 10.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         item {
             Text(
                 modifier = Modifier.padding(10.dp),
                 textAlign = TextAlign.Center,
-                text = "Size : ",
+                text = "Size(uk) : ",
+                color = DarkGray,
                 fontFamily = FontFamily.SansSerif,
                 style = Typography.titleMedium,
                 fontWeight = FontWeight.Normal
@@ -232,12 +248,12 @@ fun SizeComponent(sizeList: List<String>) {
                             .width(80.dp)
                             .padding(10.dp)
                             .background(
-                                shape = RoundedCornerShape(5.dp),
+                                shape = RoundedCornerShape(10.dp),
                                 color = if (selected.value == currentSize) ThemeOrange else Color.Transparent
                             )
                             .border(
                                 width = 1.dp,
-                                shape = RoundedCornerShape(5.dp),
+                                shape = RoundedCornerShape(10.dp),
                                 color = ThemeOrange
                             )
                             .padding(10.dp)
@@ -245,6 +261,7 @@ fun SizeComponent(sizeList: List<String>) {
                                 selected.value = currentSize
                             }, textAlign = TextAlign.Center,
                         text = currentSize,
+                        style = Typography.titleMedium,
                         color = if (selected.value == currentSize) Color.White else ThemeOrange
                     )
                 }
@@ -262,7 +279,8 @@ fun CarouselComponent(modifier: Modifier = Modifier, onBackPressed: () -> Unit) 
     val pagerState = rememberPagerState()
     Column(modifier = modifier) {
         Icon(
-            modifier = Modifier.padding(10.dp)
+            modifier = Modifier
+                .padding(10.dp)
                 .size(30.dp)
                 .rotate(90f)
                 .clickable { onBackPressed() },
@@ -299,7 +317,7 @@ fun CarouselComponent(modifier: Modifier = Modifier, onBackPressed: () -> Unit) 
                 }
 
             }
-            Spacer(modifier = Modifier.padding(20.dp))
+            Spacer(modifier = Modifier.padding(15.dp))
             HorizontalPagerIndicator(
                 pagerState = pagerState,
                 indicatorWidth = 60.dp,
@@ -338,7 +356,10 @@ fun ItemDescriptionScreenPreview() {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 HorizontalPager(count = 3) {
-                    Box(modifier = Modifier.fillMaxWidth(0.5f), contentAlignment = Alignment.Center) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(0.5f),
+                        contentAlignment = Alignment.Center
+                    ) {
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -357,12 +378,12 @@ fun ItemDescriptionScreenPreview() {
                         Image(
                             modifier = Modifier.fillMaxWidth(),
                             painter = painterResource(id = R.drawable.product_item),
-                            contentDescription = "App"
+                            contentDescription = "Product Image"
                         )
                     }
 
                 }
-                Spacer(modifier = Modifier.padding(20.dp))
+                Spacer(modifier = Modifier.padding(15.dp))
                 HorizontalPagerIndicator(
                     pagerState = rememberPagerState(),
                     indicatorWidth = 60.dp,
