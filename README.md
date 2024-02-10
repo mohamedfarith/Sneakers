@@ -16,8 +16,9 @@ this app aims to cater to your needs by offering a seamless browsing experience.
 
 - Built entirely in **Jetpack Compose** with **Kotlin**
 - Followed Best practices with **MVVM + Clean Architecture**
+- Multithreading with **Coroutines and Flows**
 - Dependency Injection with **Dagger-Hilt**
-- Sqlite Database with **Room Db**
+- SQLite Database with **Room Db**
 - Unit Testing with **Junit**
 
 **Here is a glimpse of the app**
