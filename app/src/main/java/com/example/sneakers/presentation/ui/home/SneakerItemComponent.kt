@@ -97,7 +97,7 @@ fun SneakerItemComponent(
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    modifier = Modifier.padding(bottom = 10.dp),
+                    modifier = Modifier.padding(bottom = 5.dp),
                     textAlign = TextAlign.Center,
                     text = sneakerItem.price,
                     color = ThemeOrange,

@@ -1,8 +1,8 @@
-package com.example.sneakers.data.remote.datasourceimpl.home
+package com.example.sneakers.data.local.localdatasourceimpl.search
 
 import com.example.sneakers.constants.AppConstants
 import com.example.sneakers.data.models.home.SneakerListDto
-import com.example.sneakers.domain.remote.datasource.home.HomeDataSource
+import com.example.sneakers.domain.local.localdatasource.search.LocalSearchDataSource
 import com.example.sneakers.network.NetworkState
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
@@ -10,8 +10,8 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
-class HomeDataSourceImpl @Inject constructor() : HomeDataSource {
-    override suspend fun getTopSneakersList(): Flow<NetworkState> {
+class LocalSearchDataSourceImpl @Inject constructor() : LocalSearchDataSource {
+    override suspend fun getSneakersList(): Flow<NetworkState> {
         return flow<NetworkState> {
             emit(NetworkState.Success(Gson().fromJson(fakeHomeData(), SneakerListDto::class.java)))
         }.catch {

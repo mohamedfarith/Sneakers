@@ -1,5 +1,6 @@
 package com.example.sneakers.presentation.ui.home
 
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,13 +18,16 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -33,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.LifecycleEventObserver
 import com.example.sneakers.R
 import com.example.sneakers.constants.AppConstants
@@ -41,22 +46,28 @@ import com.example.sneakers.data.models.home.SneakerListDto
 import com.example.sneakers.network.NetworkState
 import com.example.sneakers.presentation.ui.SneakerUiDto
 import com.example.sneakers.presentation.ui.cart.CartViewModel
+import com.example.sneakers.presentation.ui.common.ProgressBarComponent
 import com.example.sneakers.presentation.ui.toSneakerItemDao
 import com.example.sneakers.presentation.ui.toSneakerUiDto
 import com.example.sneakers.ui.theme.ThemeOrange
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     homeViewModel: HomeViewModel = hiltViewModel(),
     cartViewModel: CartViewModel = hiltViewModel(),
-    addToCartClicked: (SneakerItemDao) -> Unit,
-    nextScreenRoute: (String, SneakerUiDto) -> Unit
+    addToCartClicked: (SneakerUiDto) -> Unit,
+    nextScreenRoute: (String, SneakerUiDto) -> Unit,
+    onSearchClicked: () -> Unit
 ) {
+    val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current.lifecycle
     val latestEvent = remember {
         mutableStateOf(Lifecycle.Event.ON_ANY)
     }
+    val coroutineScope = rememberCoroutineScope()
     DisposableEffect(lifecycleOwner) {
         val lifecycleObserver = LifecycleEventObserver { _, event -> latestEvent.value = event }
         lifecycleOwner.addObserver(lifecycleObserver)
@@ -66,11 +77,13 @@ fun HomeScreen(
     if (latestEvent.value == Lifecycle.Event.ON_RESUME) {
         homeViewModel.fetchSneakerData()
     }
+
+
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             CollapsableTopBar(scrollBehavior = scrollBehavior, onSearchClicked = {
-
+                onSearchClicked()
             })
         }) {
         when (val state = homeViewModel.sneakerListData.collectAsState().value) {
@@ -80,6 +93,7 @@ fun HomeScreen(
 
             NetworkState.Loading -> {
                 //handle loading state
+                ProgressBarComponent()
             }
 
             is NetworkState.Success -> {
@@ -101,9 +115,7 @@ fun HomeScreen(
                             items(list.size) {
                                 SneakerItemComponent(list[it].toSneakerUiDto(),
                                     addToCartClicked = { sneakerUiDto ->
-                                        addToCartClicked(
-                                            sneakerUiDto.toSneakerItemDao()
-                                        )
+                                        addToCartClicked(sneakerUiDto)
                                     },
                                     onCardClicked = { sneakerItem ->
                                         nextScreenRoute(
@@ -129,7 +141,7 @@ fun HomeScreen(
 fun CollapsableTopBar(scrollBehavior: TopAppBarScrollBehavior, onSearchClicked: () -> Unit) {
     MediumTopAppBar(
         title = {
-            Row {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     modifier = Modifier
                         .padding(20.dp)
@@ -145,7 +157,7 @@ fun CollapsableTopBar(scrollBehavior: TopAppBarScrollBehavior, onSearchClicked: 
                 )
                 Icon(
                     modifier = Modifier
-                        .padding(20.dp)
+                        .padding(end = 30.dp)
                         .clickable { onSearchClicked() },
                     tint = ThemeOrange,
                     painter = painterResource(id = R.drawable.search_icon),

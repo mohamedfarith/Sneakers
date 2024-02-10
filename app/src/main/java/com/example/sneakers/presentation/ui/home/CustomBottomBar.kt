@@ -14,6 +14,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -27,10 +29,10 @@ import com.example.sneakers.ui.theme.WhiteTransparent
 fun NavBottomBarWrapper(navController: NavController) {
     BottomAppBar(
         modifier = Modifier
-            .height(60.dp)
+            .height(60.dp).shadow(shape = RoundedCornerShape(40.dp,40.dp,0.dp,0.dp), elevation = 10.dp)
             .clip(RoundedCornerShape(40.dp, 40.dp, 0.dp, 0.dp)),
         cutoutShape = null,
-        backgroundColor = WhiteTransparent,
+        backgroundColor = Color.Transparent,
         elevation = 20.dp
     ) {
         BottomNavigationBar(navController = navController)
@@ -40,13 +42,12 @@ fun NavBottomBarWrapper(navController: NavController) {
 sealed class NavigationItem(val route: String, val icon: Int? = null) {
     data object Home : NavigationItem(AppConstants.HOME)
     data object Cart : NavigationItem(AppConstants.CART, icon = R.drawable.cart_unselected_icon)
-    data object ItemDescription : NavigationItem(AppConstants.ITEM_DESCRIPTION)
 
 }
 
 @Composable
 fun BottomNavigationBar(navController: NavController) {
-    BottomNavigation(backgroundColor = WhiteTransparent) {
+    BottomNavigation(backgroundColor = Color.White) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
         val navigationItemList = listOf(
@@ -66,12 +67,12 @@ fun BottomNavigationBar(navController: NavController) {
                         val iconModifier = Modifier
                             .size(40.dp)
                             .clip(RoundedCornerShape(30.dp))
-                            .background(color = if (selected) ThemeOrange else WhiteTransparent)
+                            .background(color = if (selected) ThemeOrange else Color.White)
                             .padding(if (selected) 8.dp else 4.dp)
                         Icon(
                             modifier = iconModifier,
                             painter = painterResource(id = resId),
-                            tint = if (selected) WhiteTransparent else ThemeOrange,
+                            tint = if (selected) Color.White else ThemeOrange,
                             contentDescription = item.route
                         )
                     }

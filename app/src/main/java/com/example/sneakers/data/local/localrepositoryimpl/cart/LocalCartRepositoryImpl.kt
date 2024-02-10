@@ -1,4 +1,4 @@
-package com.example.sneakers.data.local.localrepositoryimpl
+package com.example.sneakers.data.local.localrepositoryimpl.cart
 
 import com.example.sneakers.data.models.cart.SneakerItemDao
 import com.example.sneakers.domain.local.localdatasource.cart.LocalCartDataSource

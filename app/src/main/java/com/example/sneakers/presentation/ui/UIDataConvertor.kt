@@ -12,7 +12,16 @@ data class SneakerUiDto(
     val price: String,
     val gender: String,
     val brand: String
-)
+) {
+    fun doesMatchSearchQuery(query: String): Boolean {
+        val matchingCombinations = listOf(
+            "$title",
+        )
+        return matchingCombinations.any {
+            it.contains(query, ignoreCase = true)
+        }
+    }
+}
 
 fun SneakerItemDto.toSneakerUiDto(): SneakerUiDto {
     return SneakerUiDto(
@@ -25,7 +34,8 @@ fun SneakerItemDto.toSneakerUiDto(): SneakerUiDto {
         brand = this.brand.nonNullString()
     )
 }
-fun SneakerUiDto.toSneakerItemDao():SneakerItemDao{
+
+fun SneakerUiDto.toSneakerItemDao(): SneakerItemDao {
     return SneakerItemDao(
         id = this.id.nonNullString(),
         title = this.title.nonNullString(),

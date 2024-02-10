@@ -44,7 +44,7 @@ fun CartItemComponent(sneakerUiDto: SneakerUiDto, removeFromCartClicked: (Sneake
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .padding(5.dp)
+                .padding(horizontal = 10.dp, vertical = 5.dp)
                 .shadow(shape = RoundedCornerShape(size = 20.dp), elevation = 2.dp)
                 .background(Color.White),
         ) {

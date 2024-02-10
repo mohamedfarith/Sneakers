@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -34,7 +35,7 @@ fun OrderDetails(mData: List<SneakerUiDto>) {
         Text(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 10.dp),
+                .padding(horizontal = 10.dp, vertical = 10.dp),
             textAlign = TextAlign.Start,
             text = "Order Details",
             fontFamily = FontFamily.SansSerif,
@@ -46,7 +47,7 @@ fun OrderDetails(mData: List<SneakerUiDto>) {
         Text(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp),
+                .padding(horizontal = 10.dp),
             textAlign = TextAlign.Start,
             text = "Sub total : $$amount",
             fontFamily = FontFamily.SansSerif,
@@ -59,7 +60,7 @@ fun OrderDetails(mData: List<SneakerUiDto>) {
         Text(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 20.dp, end = 20.dp, bottom = 20.dp),
+                .padding(start = 10.dp, end = 20.dp, bottom = 20.dp),
             textAlign = TextAlign.Start,
             text = "Taxes and Charges : $50",
             fontFamily = FontFamily.SansSerif,
@@ -71,9 +72,20 @@ fun OrderDetails(mData: List<SneakerUiDto>) {
         )
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
+                modifier = Modifier.wrapContentWidth().padding(10.dp),
+                textAlign = TextAlign.Start,
+                text = "Total :",
+                fontFamily = FontFamily.SansSerif,
+                style = Typography.titleLarge,
+                fontWeight = FontWeight.Medium,
+                maxLines = 2,
+                color = DarkGray,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
                 modifier = Modifier.wrapContentWidth(),
                 textAlign = TextAlign.Start,
-                text = "Total : $${amount+50}",
+                text = "$${amount + 50}",
                 fontFamily = FontFamily.SansSerif,
                 style = Typography.titleLarge,
                 fontWeight = FontWeight.Medium,
@@ -84,13 +96,14 @@ fun OrderDetails(mData: List<SneakerUiDto>) {
             Spacer(modifier = Modifier.weight(1f))
             androidx.compose.material.Button(
                 modifier = Modifier.padding(20.dp),
+                shape = RoundedCornerShape(8.dp),
                 onClick = {},
                 colors = ButtonDefaults.buttonColors(backgroundColor = ThemeOrange)
             ) {
                 Text(
                     modifier = Modifier.padding(5.dp),
                     textAlign = TextAlign.Center,
-                    text = "Checkout",
+                    text = "$ Checkout",
                     color = Color.White,
                     fontFamily = FontFamily.SansSerif,
                     style = Typography.titleMedium,
