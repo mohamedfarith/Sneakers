@@ -63,7 +63,7 @@ class MainActivity : ComponentActivity() {
 
             LaunchedEffect(key1 = Unit) {
                 coroutineScope.launch {
-                    cartViewModel.dbOperationState.collect { message ->
+                    cartViewModel.toastMessage.collect { message ->
                         Toast.makeText(
                             context,
                             message,
